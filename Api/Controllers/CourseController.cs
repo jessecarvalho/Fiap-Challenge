@@ -43,11 +43,16 @@ public class CourseController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateCourse([FromBody] CourseRequestDto courseDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var newCourse = await _courseServices.AddCourseAsync(courseDto);
         return CreatedAtAction(nameof(GetCoursesById), new { id = newCourse.Id }, newCourse);
     }
     
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCourse(int id, [FromBody] CourseRequestDto courseDto)
     {
         if (!ModelState.IsValid)
