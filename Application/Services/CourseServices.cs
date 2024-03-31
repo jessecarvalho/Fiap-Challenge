@@ -2,6 +2,7 @@ using Application.Dto;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Core.Entities;
+using Core.Exceptions;
 using Infrastructure.Interfaces.Repositories;
 
 namespace Application.Services;
@@ -25,6 +26,10 @@ public class CourseServices : ICourseServices
     public async Task<CourseResponseDto?> GetCourseByIdAsync(int id)
     {
         var course = await _courseRepository.GetByIdAsync(id);
+        if (course == null)
+        {
+            throw new CourseNotFoundException();
+        }
         return course == null ? null : _mapper.Map<CourseResponseDto>(course);
     }
 
@@ -37,7 +42,7 @@ public class CourseServices : ICourseServices
 
         if (isTitleNotUnique)
         {
-            throw new Exception("The course title needs to be unique");
+            throw new CourseNotUniqueException();
         }
         
         var newCourse = await _courseRepository.AddAsync(course);
@@ -52,7 +57,7 @@ public class CourseServices : ICourseServices
 
         if (courseExists == null)
         {
-            return null;
+            throw new CourseNotFoundException();
         }
 
         var course = _mapper.Map<Course>(courseRequestDto);
@@ -61,7 +66,7 @@ public class CourseServices : ICourseServices
 
         if (isTitleNotUnique)
         {
-            throw new Exception("The course title needs to be unique");
+            throw new CourseNotUniqueException();
         }
 
         course.Id = id;
@@ -78,7 +83,7 @@ public class CourseServices : ICourseServices
 
         if (courseToDelete == null)
         {
-            return null;
+            throw new CourseNotFoundException();
         }
         
         return await _courseRepository.DeleteAsync(id);

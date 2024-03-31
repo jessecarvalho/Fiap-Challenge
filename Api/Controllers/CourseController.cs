@@ -2,6 +2,7 @@ using Application.Dto;
 using Application.Interfaces.Services;
 using Application.Services;
 using AutoMapper;
+using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -30,14 +31,16 @@ public class CourseController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCoursesById(int id)
     {
-        var course = await _courseServices.GetCourseByIdAsync(id);
-        
-        if (course == null)
+        try
         {
-            return NotFound();
+            var course = await _courseServices.GetCourseByIdAsync(id);
+            return Ok(course);
         }
-
-        return Ok(course);
+        catch (CourseNotFoundException notFoundException)
+        {
+            return NotFound("Course not found");
+        }
+        
     }
 
     [HttpPost]
@@ -59,26 +62,32 @@ public class CourseController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
-        var updatedCourse = await _courseServices.UpdateCourseAsync(id, courseDto);
-        if (updatedCourse == null)
-        {
-            return NotFound();
-        }
 
-        return Ok(updatedCourse);
+        try
+        {
+            var updatedCourse = await _courseServices.UpdateCourseAsync(id, courseDto);
+            return Ok(updatedCourse);
+        }
+        catch (CourseNotFoundException notFoundException)
+        {
+            return NotFound("Course not found");
+        }
+        
     }
     
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCourse(int id)
     {
-        var deleted = await _courseServices.DeleteCourseAsync(id);
-        if (deleted == null)
+        try
         {
-            return NotFound();
+            var deleted = await _courseServices.DeleteCourseAsync(id);
+            return Ok();
         }
-
-        return Ok();
+        catch (CourseNotFoundException notFoundException)
+        {
+            return NotFound("Course not found");
+        }
+        
     }
     
 }

@@ -1,6 +1,7 @@
 using Application.Dto;
 using Application.Interfaces.Services;
 using Core.Entities;
+using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -27,24 +28,20 @@ public class StudentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetStudentById(int id)
     {
-        var student = await _studentServices.GetStudentByIdAsync(id);
-
-        if (student == null)
+        try
+        {
+            var student = await _studentServices.GetStudentByIdAsync(id);
+            return Ok(student);
+        }
+        catch (StudentNotFoundException notFoundException)
         {
             return NotFound("Student not found");
         }
-        
-        return Ok(student);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateStudent([FromBody] StudentRequestDto student)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         var newStudent = await _studentServices.AddStudentAsync(student);
         
         if (newStudent == null)
@@ -62,35 +59,32 @@ public class StudentController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
-        var studentToUpdate = await _studentServices.GetStudentByIdAsync(id);
 
-        if (studentToUpdate == null)
+        try
+        {
+            var updatedStudent = await _studentServices.UpdateStudentAsync(id, student);
+            return Ok(updatedStudent);
+        }
+        catch (StudentNotFoundException studentNotFoundException)
         {
             return NotFound("Student not found");
         }
         
-        var updatedStudent = await _studentServices.UpdateStudentAsync(id, student);
-
-        if (updatedStudent == null)
-        {
-            return NotFound("Student not found");
-        }
-        
-        return Ok(updatedStudent);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteStudent(int id)
     {
-        var deleted = await _studentServices.DeleteStudentAsync(id);
-
-        if (deleted == null)
+        try
+        {
+            var deleted = await _studentServices.DeleteStudentAsync(id);
+            return Ok("Student deleted successfully");
+        }
+        catch (StudentNotFoundException studentNotFoundException)
         {
             return NotFound("Student not found");
         }
-
-        return Ok("Student deleted successfully");
+        
     }
     
 }

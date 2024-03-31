@@ -2,6 +2,7 @@ using Application.Dto;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Core.Entities;
+using Core.Exceptions;
 using Infrastructure.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
 
@@ -29,6 +30,10 @@ public class StudentServices : IStudentServices
     public async Task<StudentResponseDto?> GetStudentByIdAsync(int id)
     {
         var student = await _studentRepository.GetByIdAsync(id);
+        if (student == null)
+        {
+            throw new StudentNotFoundException();
+        }
         return _mapper.Map<StudentResponseDto>(student);
     }
 
@@ -52,7 +57,7 @@ public class StudentServices : IStudentServices
 
         if (studentExists == null)
         {
-            return null;
+            throw new StudentNotFoundException();
         }
 
         var student = _mapper.Map<Student>(studentRequestDto);
@@ -75,7 +80,7 @@ public class StudentServices : IStudentServices
 
         if (studentToDelete == null)
         {
-            return null;
+            throw new StudentNotFoundException();
         }
 
         return await _studentRepository.DeleteAsync(id);
