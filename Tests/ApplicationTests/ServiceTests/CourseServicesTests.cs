@@ -6,6 +6,7 @@ using Application.Validators;
 using AutoMapper;
 using Core.Entities;
 using Core.Enums;
+using Core.Exceptions;
 using Infrastructure.Interfaces.Repositories;
 using Infrastructure.Repositories;
 using Moq;
@@ -116,7 +117,7 @@ public class CourseServicesTests
         var courseRequestDtoWithSameName = new CourseRequestDto{ Id = 2, Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
         
         // Assert
-        await Assert.ThrowsAsync<Exception>(async () => await _courseServices.AddCourseAsync(courseRequestDtoWithSameName));
+        await Assert.ThrowsAsync<CourseNotUniqueException>(async () => await _courseServices.AddCourseAsync(courseRequestDtoWithSameName));
 
     }
     
@@ -165,13 +166,10 @@ public class CourseServicesTests
     }
 
     [Fact]
-    public async Task DeleteCourse_WhenCalledWithInvalidId_ReturnsNull()
+    public async Task DeleteCourse_WhenCalledWithInvalidId_ThrowsError()
     {
-        // Act
-        var result = await _courseServices.DeleteCourseAsync(200);
-
         // Assert
-        Assert.Null(result);
+        await Assert.ThrowsAsync<CourseNotFoundException>(async () => await _courseServices.DeleteCourseAsync(200));
     }
     
     

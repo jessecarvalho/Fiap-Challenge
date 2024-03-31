@@ -5,6 +5,7 @@ using Application.Services;
 using Application.Validators;
 using AutoMapper;
 using Core.Entities;
+using Core.Exceptions;
 using Infrastructure.Interfaces.Repositories;
 using Moq;
 
@@ -74,14 +75,10 @@ public class StudentServicesTests
     }
 
     [Fact]
-    public async Task GetStudentByIdAsync_WhenCalledWithInvalidId_ReturnsNull()
+    public async Task GetStudentByIdAsync_WhenCalledWithInvalidId_ThrowsError()
     {
-        // Act
-        var result = await _studentServices.GetStudentByIdAsync(2);
-        
         // Assert
-        Assert.Null(result);
-        
+        await Assert.ThrowsAsync<StudentNotFoundException>(async () => await _studentServices.GetStudentByIdAsync(200));
     }
 
     [Fact]
@@ -171,9 +168,10 @@ public class StudentServicesTests
     }
 
     [Fact]
-    public async Task UpdateStudentAsync_WhenCalledWithInvalidId_ReturnsNull()
+    public async Task UpdateStudentAsync_WhenCalledWithInvalidId_ThrowsError()
     {
         // Arrange
+        _studentRequestDto.Email = null;
         var validationResult = await _validator.ValidateAsync(_studentRequestDto);
 
         // Act
@@ -196,12 +194,8 @@ public class StudentServicesTests
     }
 
     [Fact]
-    public async Task DeleteStudentAsync_WhenCalledWithInvalidId_ReturnsNull()
+    public async Task DeleteStudentAsync_WhenCalledWithInvalidId_ThrowsError()
     {
-        // Act
-        var result = await _studentServices.DeleteStudentAsync(200);
-        
-        // Assert
-        Assert.Null(result);
+        await Assert.ThrowsAsync<StudentNotFoundException>(async () => await _studentServices.DeleteStudentAsync(200));
     }
 }
