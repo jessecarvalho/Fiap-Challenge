@@ -30,7 +30,7 @@ public class CourseServices : ICourseServices
         {
             throw new CourseNotFoundException();
         }
-        return course == null ? null : _mapper.Map<CourseResponseDto>(course);
+        return _mapper.Map<CourseResponseDto>(course);
     }
 
     public async Task<CourseResponseDto> AddCourseAsync(CourseRequestDto courseDto)
