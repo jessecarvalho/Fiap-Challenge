@@ -41,9 +41,7 @@ public class StudentServices : IStudentServices
     {
         var student = _mapper.Map<Student>(studentRequestDto);
 
-        var passwordHasher = new PasswordHasher<Student>();
-
-        student.Password = passwordHasher.HashPassword(student, studentRequestDto.Password);
+        student.Password = HashStudentPassword(student, studentRequestDto.Password);
         
         var newStudent = await _studentRepository.AddAsync(student);
         
@@ -62,11 +60,9 @@ public class StudentServices : IStudentServices
 
         var student = _mapper.Map<Student>(studentRequestDto);
         
-        var passwordHasher = new PasswordHasher<Student>();
+        student.Password = HashStudentPassword(student, studentRequestDto.Password);
 
         student.Id = id;
-
-        student.Password = passwordHasher.HashPassword(student, studentRequestDto.Password);
         
         var updatedStudent = await _studentRepository.UpdateAsync(student);
 
@@ -84,5 +80,11 @@ public class StudentServices : IStudentServices
         }
 
         return await _studentRepository.DeleteAsync(id);
+    }
+
+    private string HashStudentPassword(Student student, string password)
+    {
+        var passwordHasher = new PasswordHasher<Student>();
+        return passwordHasher.HashPassword(student, password);
     }
 }
