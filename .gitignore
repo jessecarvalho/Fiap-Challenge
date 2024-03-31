@@ -1,7 +1,7 @@
 /
 .idea
-/bin
-/
+*/bin
+*/obj
 Folder.DotSettings.user
 appsettings.json
 appsettings.Development.json
