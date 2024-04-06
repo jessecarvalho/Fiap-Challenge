@@ -18,5 +18,4 @@ public record CourseRequestDto
     [Required]
     public CourseYearEnum Year { get; set; }
     
-    public List<StudentRequestDto>? Students { get; set; }
 }
