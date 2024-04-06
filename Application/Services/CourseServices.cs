@@ -4,16 +4,19 @@ using AutoMapper;
 using Core.Entities;
 using Core.Exceptions;
 using Infrastructure.Interfaces.Repositories;
+using Infrastructure.Repositories;
 
 namespace Application.Services;
 public class CourseServices : ICourseServices
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IStudentRepository _studentRepository;
     private readonly IMapper _mapper;
 
-    public CourseServices(ICourseRepository courseRepository, IMapper mapper)
+    public CourseServices(ICourseRepository courseRepository, IMapper mapper, IStudentRepository studentRepository)
     {
         _courseRepository = courseRepository;
+        _studentRepository = studentRepository;
         _mapper = mapper;
     }
 
@@ -87,6 +90,47 @@ public class CourseServices : ICourseServices
         }
         
         return await _courseRepository.DeleteAsync(id);
+    }
+
+    public async Task<CourseResponseDto> AddStudentToCourseAsync(int courseId, int studentId)
+    {
+        var course = await _courseRepository.GetByIdAsync(courseId);
+
+        if (course == null)
+        {
+            throw new CourseNotFoundException();
+        }
+
+        var student = await _studentRepository.GetByIdAsync(studentId);
+
+        if (student == null)
+        {
+            throw new StudentNotFoundException();
+        }
+
+        var result = await _courseRepository.AddStudentToCourseAsync(courseId, studentId);
+
+        return _mapper.Map<CourseResponseDto>(result);
+    }
+
+    public async Task<bool> RemoveStudentFromCourseAsync(int studentId, int courseId)
+    {
+        var course = await _courseRepository.GetByIdAsync(courseId);
+
+        if (course == null)
+        {
+            throw new CourseNotFoundException();
+        }
+
+        var student = await _studentRepository.GetByIdAsync(studentId);
+
+        if (student == null)
+        {
+            throw new StudentNotFoundException();
+        }
+
+        return await _courseRepository.RemoveStudentFromCourseAsync(courseId, studentId);
+        
     }
 
 }
