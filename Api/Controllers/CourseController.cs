@@ -90,4 +90,37 @@ public class CourseController : ControllerBase
         
     }
     
+    [HttpPost("{courseId}/students/{studentId}")]
+    public async Task<IActionResult> AddStudentToCourse(int courseId, int studentId)
+    {
+        try
+        {
+            var result = await _courseServices.AddStudentToCourseAsync(courseId, studentId);
+
+            return Ok(result);
+        }
+        catch (CourseNotFoundException)
+        {
+            return NotFound("Course was not found");
+        }
+        catch (StudentNotFoundException)
+        {
+            return NotFound("Student was not found");
+        }
+        
+    }
+
+    [HttpDelete("{courseId}/students/{studentid}")]
+    public async Task<IActionResult> RemoveStudentFromCourse(int courseId, int studentId)
+    {
+        var result = await _courseServices.RemoveStudentFromCourseAsync(courseId, studentId);
+
+        if (!result)
+        {
+            return BadRequest("Failed to remove student from course");
+        }
+
+        return Ok("Student removed from course");
+    }
+
 }
