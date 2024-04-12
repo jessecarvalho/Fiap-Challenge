@@ -5,7 +5,7 @@
 This is a job challenge from FIAP.
 
 #### Requirements:
--[x] Create restful API.
+-[x] Create restful API. 
 -[x] Validate Payloads.
 -[x] Use Clean Arch or DDD. 
 -[x] Create unit tests with XUnit 
@@ -15,7 +15,7 @@ This is a job challenge from FIAP.
 
 #### Business Logic Requirements
 -[x] The App can't allow courses with the same name.
-- The App can't allow the same student be duplicated in one course.
+-[ ] The App can't allow the same student be duplicated in one course.
 -[x] The App can't allow weak passwords to be register in Students.
 -[x] The App has to save the passwords hashed.
 
