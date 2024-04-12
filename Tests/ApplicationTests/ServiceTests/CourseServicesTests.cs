@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Dto;
+using Application.DTOs;
 using Application.Mappings;
 using Application.Services;
 using Application.Validators;
@@ -23,6 +24,7 @@ public class CourseServicesTests
     private readonly CourseRequestDto _courseRequestDto;
     private readonly CourseResponseDto _courseResponseDto;
     private readonly CourseRequestDtoValidator _validator;
+    private readonly Mock<IStudentRepository> _studentRepositoryMock;
 
     public CourseServicesTests()
     {
@@ -41,11 +43,12 @@ public class CourseServicesTests
             new Course
                 { Id = 2, Title = "English", Description = "English Best Course", Year = CourseYearEnum.Fifth, }
         };
-        _courseRequestDto = new CourseRequestDto{ Id = 1, Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
+        _courseRequestDto = new CourseRequestDto{ Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
         _courseResponseDto = new CourseResponseDto{ Id = 1, Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
-        
+        _studentRepositoryMock = new Mock<IStudentRepository>();
         _courseRepositoryMock = new Mock<ICourseRepository>();
-        _courseServices = new CourseServices(_courseRepositoryMock.Object, mapper);
+        _courseServices = new CourseServices(_courseRepositoryMock.Object, mapper, _studentRepositoryMock.Object);
+        _courseRepositoryMock.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(_course);
         _courseRepositoryMock.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(_course);
         _courseRepositoryMock.Setup(x => x.GetAllAsync()).ReturnsAsync(_courses);
         _courseRepositoryMock.Setup(x => x.AddAsync(It.IsAny<Course>())).ReturnsAsync(_course);
@@ -114,7 +117,7 @@ public class CourseServicesTests
         
         // Arrange
         _courseRepositoryMock.Setup(x => x.CheckIfCourseTitleIsUnique(It.IsAny<Course>())).Returns(true);
-        var courseRequestDtoWithSameName = new CourseRequestDto{ Id = 2, Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
+        var courseRequestDtoWithSameName = new CourseRequestDto{ Title = "Math", Description = "Math Best Course", Year = CourseYearEnum.First };
         
         // Assert
         await Assert.ThrowsAsync<CourseNotUniqueException>(async () => await _courseServices.AddCourseAsync(courseRequestDtoWithSameName));
