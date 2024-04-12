@@ -1,12 +1,7 @@
 using Api.Configuration;
 using Api.Middleware;
-using Application.Interfaces.Services;
 using Application.Mappings;
-using Application.Services;
-using Application.Validators;
 using FluentValidation.AspNetCore;
-using Infrastructure.Interfaces.Repositories;
-using Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
