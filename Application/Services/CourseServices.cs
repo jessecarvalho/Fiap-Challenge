@@ -1,4 +1,4 @@
-using Application.Dto;
+using Application.DTOs;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Core.Entities;
@@ -113,7 +113,7 @@ public class CourseServices : ICourseServices
         return _mapper.Map<CourseResponseDto>(result);
     }
 
-    public async Task<bool> RemoveStudentFromCourseAsync(int studentId, int courseId)
+    public async Task<bool> RemoveStudentFromCourseAsync(int courseId, int studentId)
     {
         var course = await _courseRepository.GetByIdAsync(courseId);
 
