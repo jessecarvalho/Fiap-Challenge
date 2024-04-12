@@ -1,5 +1,6 @@
 using Application.Dto;
 using Application.Interfaces.Services;
+using Application.Validators;
 using Core.Entities;
 using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Api.Controllers;
 public class StudentController : ControllerBase
 {
     private readonly IStudentServices _studentServices;
+    private readonly StudentRequestDtoValidator _studentRequestDtoValidator;
 
-    public StudentController(IStudentServices studentServices)
+    public StudentController(IStudentServices studentServices, StudentRequestDtoValidator studentRequestDtoValidator)
     {
         _studentServices = studentServices;
+        _studentRequestDtoValidator = studentRequestDtoValidator;
     }
 
     [HttpGet]
@@ -42,6 +45,13 @@ public class StudentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateStudent([FromBody] StudentRequestDto student)
     {
+        var validationResult = await _studentRequestDtoValidator.ValidateAsync(student);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+        
         var newStudent = await _studentServices.AddStudentAsync(student);
         
         if (newStudent == null)
@@ -55,9 +65,11 @@ public class StudentController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStudent(int id, [FromBody] StudentRequestDto student)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _studentRequestDtoValidator.ValidateAsync(student);
+
+        if (!validationResult.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(validationResult.Errors);
         }
 
         try
@@ -86,5 +98,5 @@ public class StudentController : ControllerBase
         }
         
     }
-    
+
 }
