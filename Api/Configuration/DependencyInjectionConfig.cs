@@ -1,5 +1,6 @@
 using Application.Interfaces.Services;
 using Application.Services;
+using Application.Validators;
 using Infrastructure.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,8 @@ namespace Api.Configuration
             services.AddScoped<IStudentServices, StudentServices>();
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddTransient<CourseRequestDtoValidator>();
+            services.AddTransient<StudentRequestDtoValidator>();
         }
     }
 }
