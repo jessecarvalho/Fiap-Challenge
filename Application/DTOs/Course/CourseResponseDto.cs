@@ -1,6 +1,6 @@
 using Core.Enums;
 
-namespace Application.Dto;
+namespace Application.DTOs;
 
 public record CourseResponseDto
 {
@@ -8,5 +8,5 @@ public record CourseResponseDto
     public string Title { get; set; }
     public string Description { get; set; }
     public CourseYearEnum Year { get; set; }
-    public List<StudentResponseDto>? Students { get; set; }
+    public List<StudentResponseWithoutCourseDto>? Students { get; set; }
 }
