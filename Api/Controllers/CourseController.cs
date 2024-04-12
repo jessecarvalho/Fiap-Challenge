@@ -1,6 +1,8 @@
 using Application.Dto;
+using Application.DTOs;
 using Application.Interfaces.Services;
 using Application.Services;
+using Application.Validators;
 using AutoMapper;
 using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +16,11 @@ public class CourseController : ControllerBase
 
     private readonly ICourseServices _courseServices;
     private readonly IMapper _mapper;
+    private readonly CourseRequestDtoValidator _courseRequestDtoValidator;
 
-    public CourseController(ICourseServices courseServices, IMapper mapper)
+    public CourseController(ICourseServices courseServices, IMapper mapper, CourseRequestDtoValidator courseRequestDtoValidator)
     {
+        _courseRequestDtoValidator = courseRequestDtoValidator;
         _courseServices = courseServices;
         _mapper = mapper;
     }
@@ -46,9 +50,11 @@ public class CourseController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateCourse([FromBody] CourseRequestDto courseDto)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _courseRequestDtoValidator.ValidateAsync(courseDto);
+
+        if (!validationResult.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(validationResult.Errors);
         }
         
         var newCourse = await _courseServices.AddCourseAsync(courseDto);
@@ -58,9 +64,11 @@ public class CourseController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCourse(int id, [FromBody] CourseRequestDto courseDto)
     {
-        if (!ModelState.IsValid)
+        var validationResult = await _courseRequestDtoValidator.ValidateAsync(courseDto);
+
+        if (!validationResult.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(validationResult.Errors);
         }
 
         try
@@ -110,7 +118,7 @@ public class CourseController : ControllerBase
         
     }
 
-    [HttpDelete("{courseId}/students/{studentid}")]
+    [HttpDelete("{courseId}/students/{studentId}")]
     public async Task<IActionResult> RemoveStudentFromCourse(int courseId, int studentId)
     {
         var result = await _courseServices.RemoveStudentFromCourseAsync(courseId, studentId);
