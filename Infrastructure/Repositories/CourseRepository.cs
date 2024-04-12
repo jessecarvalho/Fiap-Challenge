@@ -24,7 +24,7 @@ public class CourseRepository : ICourseRepository
 
     public async Task<Course?> GetByIdAsync(int id)
     {
-        return await _context.Courses.Include(s => s.Students).FirstOrDefaultAsync(s => s.Id == id);
+        return await _context.Courses.Include(c => c.Students).FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task<Course> AddAsync (Course course)
