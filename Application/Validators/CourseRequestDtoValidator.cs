@@ -1,12 +1,13 @@
 using Application.Dto;
+using Application.DTOs;
 using Core.Enums;
 using FluentValidation;
+using Infrastructure.Interfaces.Repositories;
 
 namespace Application.Validators;
 
 public class CourseRequestDtoValidator : AbstractValidator<CourseRequestDto>
 {
-
     public CourseRequestDtoValidator()
     {
         RuleFor(x => x.Title)
