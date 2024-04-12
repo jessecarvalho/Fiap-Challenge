@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Enums;
 
-namespace Application.Dto;
+namespace Application.DTOs;
 
 public record CourseRequestDto
 {
-    public int Id { get; init; }
     
     [Required]
     [StringLength(255)]
@@ -16,6 +15,7 @@ public record CourseRequestDto
     public string Description { get; set; }
     
     [Required]
+    [EnumDataType(typeof(CourseYearEnum))]
     public CourseYearEnum Year { get; set; }
     
 }
